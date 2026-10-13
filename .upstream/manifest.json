@@ -1,0 +1,14 @@
+{
+  "generated": "2026-10-13",
+  "origin": "https://openbench.fun/seedworld/",
+  "files": {
+    "seedworld/index.html": {
+      "bytes": 96705,
+      "sha256": "ccf347cd8ba419c54bafafda98732f41ccb5a8e5337e37fe480143bef8c18306"
+    },
+    "seedworld/og.jpg": {
+      "bytes": 59982,
+      "sha256": "297c7fcdf2b64b33aacb58228e672929e3e941440b3cf44d36dd97841738094e"
+    }
+  }
+}
