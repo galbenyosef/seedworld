@@ -1,0 +1,54 @@
+{
+  "start": "https://openbench.fun/seedworld/",
+  "origin": "https://openbench.fun",
+  "gated": false,
+  "sessionRenewal": "none",
+  "requests": 10,
+  "fetched": 2,
+  "bytes": 156687,
+  "paths": [
+    "seedworld/",
+    "seedworld/og.jpg"
+  ],
+  "unresolved": [],
+  "unreachable": [
+    {
+      "status": 404,
+      "path": "seedworld/favicon.ico",
+      "probes": 1
+    },
+    {
+      "status": 404,
+      "path": "seedworld/favicon.svg",
+      "probes": 1
+    },
+    {
+      "status": 404,
+      "path": "favicon.ico",
+      "probes": 1
+    },
+    {
+      "status": 404,
+      "path": "seedworld/apple-touch-icon.png",
+      "probes": 1
+    },
+    {
+      "status": 404,
+      "path": "seedworld/site.webmanifest",
+      "probes": 1
+    },
+    {
+      "status": 404,
+      "path": "seedworld/manifest.json",
+      "probes": 1
+    }
+  ],
+  "external": [
+    "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+    "https://fonts.gstatic.com/*.woff2 (4 font files: Instrument Serif x2, Figtree, JetBrains Mono)",
+    "https://openbench.fun/api/hit?p=seedworld&u=1&g=1&pu=1 (platform visit counter, POST, fire-and-forget)",
+    "https://openbench.fun/api/stats (platform stats read, GET)",
+    "https://openbench.fun/cdn-cgi/rum (Cloudflare RUM beacon)",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920 (Cloudflare-injected into browser-served HTML only)"
+  ]
+}
