@@ -1,0 +1,31 @@
+{
+  "generated": "2026-10-13",
+  "capture": "seedworld/index.html",
+  "note": "Every inline <script>/<style> content block in the captured entry document, with its byte range and sha256 inside the capture (the readable twin is rendered from exactly those bytes by tools/derive.mjs; tools/audit.js re-verifies the ranges).",
+  "blocks": [
+    {
+      "file": "readable/index-inline-1.pretty.css",
+      "source": "seedworld/index.html",
+      "kind": "style",
+      "block": 1,
+      "byteStart": 1127,
+      "byteEnd": 12359,
+      "bytes": 11232,
+      "sha256": "3615c6e70c4c2da72e4cea6098434b52221afea058fdf8351b5f9f94ab61084a",
+      "prettyBytes": 13816,
+      "prettySha256": "20d6c953798822084926700d963c0cb02ad1511bdb52ecf1d3f3e7100bcc85a3"
+    },
+    {
+      "file": "readable/index-inline-1.pretty.js",
+      "source": "seedworld/index.html",
+      "kind": "script",
+      "block": 1,
+      "byteStart": 21971,
+      "byteEnd": 96679,
+      "bytes": 74708,
+      "sha256": "1c7ace5837cb6c8b934c068277aa537bc14f779ce8bf03b960819ea23d1cedb7",
+      "prettyBytes": 99151,
+      "prettySha256": "685c184bafe8c65280baa150a484d74a90f36fc99de96f47581d2e82b1396aba"
+    }
+  ]
+}

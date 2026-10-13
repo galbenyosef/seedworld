@@ -1,0 +1,259 @@
+{
+  "project": "seedworld",
+  "kind": "statement-aligned-slices",
+  "slicingContext": "the game is a single inline <script> that is one top-level IIFE — slices descend one level into the IIFE body and cut at ITS top-level statement boundaries; the wrapper head/tail and the two early-return guard statements (not standalone) are skipped sections",
+  "defaultFile": "src/index-inline-1-01.js",
+  "note": "SEEDWORLD (https://openbench.fun/seedworld/) is capture-class: a single-document WebGL game on the Openbench platform served under the /seedworld/ sub-path — the entire game (raw WebGL renderer, GLSL shaders, 2D-canvas solar system, GPU texture baker, in-browser ZIP encoder) lives in one inline <script> block of seedworld/index.html, and the whole UI stylesheet in one inline <style> block; no captured .js or .css file exists and the only external <link> is Google Fonts CSS, a CDN dependency that stays CDN (PLAN §1, socker precedent — never backfilled). §0.4 fork-over-mirror was checked on 2026-10-13 — no public upstream repo exists (openbench.fun publishes deployments, not sources), so the mirror stands. Derived pipeline: capture → pinned prettier 3.9.6 (module API, default options, single pass verified idempotent — never the CLI: it respects .gitignore and can silently echo its input) → readable/: the inline script to index-inline-1.pretty.js and the inline stylesheet to index-inline-1.pretty.css (capture-root-relative twin names with the seedworld/ prefix stripped; every pretty provably NOT byte-identical to its capture source) → statement-aligned slices src/index-inline-1-NN.js cut at the IIFE body's top-level statement boundaries (~250-350 line windows; oversized single declarations stay whole) with an exact 2-line provenance header. Every slice parses standalone under `node --input-type=module --check -` and round-trips byte-exact to its recorded readable line range. Non-standalone parts are skipped sections, indexed but never sliced: the IIFE wrapper head (the `(function(){` line plus the `\"use strict\";` directive prologue) and tail (`})();`), and the two early-return guard statements (`if(!gl){…return;}` / `if(!prog){…return;}` — a bare `return` is illegal outside a function). Stylesheet rule — the inline <style> block is wholeFile, never sliced. The entry script is authored source, NOT minified — identifiers are the game's own names, so the identifier-rename campaign (PLAN §5) does not apply to this mirror. Capture bytes are untouched by everything above; re-cut with `node tools/derive.mjs` after any capture refresh. `node tools/audit.js` is the gate.",
+  "renderOptions": {
+    "_default": "prettier 3.9.6, module API, default options, single pass (re-format verified idempotent at derive time) — never the CLI: it respects .gitignore and can silently echo its input",
+    "js": "parser babel, no plugins (inline <script> blocks)",
+    "css": "parser css, no plugins (inline <style> blocks)",
+    "json": "parser json, no plugins (inline importmap blocks, if any)"
+  },
+  "source": "readable/: 1 JS pretty (the inline game script, 13 statement-aligned slices) + 1 CSS pretty (inline stylesheet, wholeFile) + readable/index-inline-map.json; src/: 13 slices; 4 skipped section(s); 1 wholeFile section(s); 1 notRendered payload(s); capture: 2 file(s) under .upstream/manifest.json; inline scan: seedworld/index.html.",
+  "inline": {
+    "scanned": [
+      "seedworld/index.html"
+    ],
+    "contentBlocks": 2,
+    "note": "the captured entry document carries exactly one inline <style> block and one inline <script> block (plus zero external script references; the only external stylesheet is the Google Fonts CDN <link>) — the twins live in readable/ and readable/index-inline-map.json records their byte ranges + sha256"
+  },
+  "external": [
+    {
+      "dep": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+      "kind": "stylesheet",
+      "note": "Google Fonts CSS — CDN dependency that stays CDN (PLAN §1, socker precedent): never backfilled into the capture, never re-hosted"
+    },
+    {
+      "dep": "https://fonts.gstatic.com/s/…/*.woff2 (4 files: Instrument Serif ×2, Figtree, JetBrains Mono)",
+      "kind": "font",
+      "note": "font binaries fetched by the Google Fonts CSS at runtime — stay external with their stylesheet"
+    },
+    {
+      "dep": "POST https://openbench.fun/api/hit?p=seedworld&… + GET https://openbench.fun/api/stats",
+      "kind": "platform-analytics",
+      "note": "Openbench platform visit counter called once per session by a trailing try/catch block; dynamic POST/GET endpoints, not static files — documented gap, not captured"
+    },
+    {
+      "dep": "https://static.cloudflareinsights.com/beacon.min.js/<rotating> + POST /cdn-cgi/rum",
+      "kind": "platform-infra",
+      "note": "Cloudflare insights beacon injected into browser-served HTML only (absent from a plain fetch) + CF RUM — infrastructure, not game code"
+    }
+  ],
+  "sources": [
+    {
+      "sourceFile": "readable/index-inline-1.pretty.css",
+      "capture": "seedworld/index.html",
+      "captureKind": "inline-style",
+      "captureByteStart": 1127,
+      "captureByteEnd": 12359,
+      "captureSha256": "3615c6e70c4c2da72e4cea6098434b52221afea058fdf8351b5f9f94ab61084a",
+      "captureBytes": 11232,
+      "prettyLines": 793,
+      "prettyBytes": 13816,
+      "prettySha256": "20d6c953798822084926700d963c0cb02ad1511bdb52ecf1d3f3e7100bcc85a3",
+      "tag": "index-inline-1",
+      "slices": 0,
+      "slicedFrom": "whole block",
+      "derived": "readable only (inline block, wholeFile)"
+    },
+    {
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "capture": "seedworld/index.html",
+      "captureKind": "inline-script",
+      "captureByteStart": 21971,
+      "captureByteEnd": 96679,
+      "captureSha256": "1c7ace5837cb6c8b934c068277aa537bc14f779ce8bf03b960819ea23d1cedb7",
+      "captureBytes": 74708,
+      "prettyLines": 3409,
+      "prettyBytes": 99151,
+      "prettySha256": "685c184bafe8c65280baa150a484d74a90f36fc99de96f47581d2e82b1396aba",
+      "prettyPasses": 1,
+      "idempotent": true,
+      "tag": "index-inline-1",
+      "slices": 13,
+      "slicedFrom": "IIFE body (the script is a single top-level IIFE; its body's statements are the sliceable units)",
+      "derived": "readable + 13 statement-aligned slice(s) + 4 skipped section(s)"
+    },
+    {
+      "sourceFile": null,
+      "capture": "seedworld/og.jpg",
+      "captureKind": "payload",
+      "captureSha256": "297c7fcdf2b64b33aacb58228e672929e3e941440b3cf44d36dd97841738094e",
+      "captureBytes": 59982,
+      "tag": "og.jpg",
+      "slices": 0,
+      "derived": "notRendered (hashed payload)"
+    }
+  ],
+  "sections": [
+    {
+      "file": "index-inline-1.css",
+      "wholeFile": true,
+      "title": "index-inline-1 — inline style block (whole-file, never sliced)",
+      "desc": "Lines 1-793 of readable/index-inline-1.pretty.css. Whole-file: the entry document's inline style block (11232 B at bytes 1127-12359 of seedworld/index.html) is indexed whole and never sliced.",
+      "note": "whole-file (entry inline style block, not sliced)",
+      "startLine": 1,
+      "endLine": 793,
+      "sourceFile": "readable/index-inline-1.pretty.css"
+    },
+    {
+      "file": "index-inline-1-wrapper-head.js",
+      "skipped": true,
+      "title": "index-inline-1 — IIFE wrapper head (not a statement, not sliced)",
+      "desc": "Lines 1-2. The opening `(function(){...})();` wrapper line plus the script's `\"use strict\";` directive prologue (directives are not statements of the body's statement list) — indexed only, never sliced.",
+      "startLine": 1,
+      "endLine": 2,
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "firstLine": "(function () {",
+      "lastLine": "  \"use strict\";"
+    },
+    {
+      "file": "index-inline-1-01.js",
+      "title": "index-inline-1 01 — canvas",
+      "desc": "Lines 3-11. Markers: canvas(2), alpha(1).",
+      "startLine": 3,
+      "endLine": 11,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-guard-12.js",
+      "skipped": true,
+      "title": "index-inline-1 — early-return guard at line 12 (not standalone)",
+      "desc": "Lines 12-15 guard statement (the section owns the adjoining blank/comment lines up to the next slice). A body-level `return` guard clause — a bare `return` is illegal outside a function, so this statement cannot stand alone; it is indexed (with its exact range) and never sliced. Statements like it precede every early exit in the script.",
+      "startLine": 12,
+      "endLine": 17,
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "firstLine": "  if (!gl) {",
+      "lastLine": "  /* ================= shaders ================= */"
+    },
+    {
+      "file": "index-inline-1-02.js",
+      "title": "index-inline-1 02 — common",
+      "desc": "Lines 18-363. Markers: common(3), src(2).",
+      "startLine": 18,
+      "endLine": 363,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-03.js",
+      "title": "index-inline-1 03 — attachshader",
+      "desc": "Lines 364-376. Markers: attachshader(2), link(2).",
+      "startLine": 364,
+      "endLine": 376,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-guard-377.js",
+      "skipped": true,
+      "title": "index-inline-1 — early-return guard at line 377 (not standalone)",
+      "desc": "Lines 377-383 guard statement (the section owns the adjoining blank/comment lines up to the next slice). A body-level `return` guard clause — a bare `return` is illegal outside a function, so this statement cannot stand alone; it is indexed (with its exact range) and never sliced. Statements like it precede every early exit in the script.",
+      "startLine": 377,
+      "endLine": 383,
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "firstLine": "  if (!prog) {",
+      "lastLine": "  }"
+    },
+    {
+      "file": "index-inline-1-04.js",
+      "title": "index-inline-1 04 — atm",
+      "desc": "Lines 384-721. Markers: atm(15), cloud(15).",
+      "startLine": 384,
+      "endLine": 721,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-05.js",
+      "title": "index-inline-1 05 — inp",
+      "desc": "Lines 722-1039. Markers: inp(14), math(11).",
+      "startLine": 722,
+      "endLine": 1039,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-06.js",
+      "title": "index-inline-1 06 — num",
+      "desc": "Lines 1040-1300. Markers: num(20), cls(19).",
+      "startLine": 1040,
+      "endLine": 1300,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-07.js",
+      "title": "index-inline-1 07 — sys",
+      "desc": "Lines 1301-1650. Markers: sys(24), seed(20).",
+      "startLine": 1301,
+      "endLine": 1650,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-08.js",
+      "title": "index-inline-1 08 — addeventlistener",
+      "desc": "Lines 1651-1998. Markers: addeventlistener(28), uniform1f(14).",
+      "startLine": 1651,
+      "endLine": 1998,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-09.js",
+      "title": "index-inline-1 09 — math",
+      "desc": "Lines 1999-2148. Markers: math(18), canvas(14).",
+      "startLine": 1999,
+      "endLine": 2148,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-10.js",
+      "title": "index-inline-1 10 — ctx",
+      "desc": "Lines 2149-2473. Markers: ctx(57), math(48).",
+      "startLine": 2149,
+      "endLine": 2473,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-11.js",
+      "title": "index-inline-1 11 — math",
+      "desc": "Lines 2474-2793. Markers: math(20), rec(13).",
+      "startLine": 2474,
+      "endLine": 2793,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-12.js",
+      "title": "index-inline-1 12 — data",
+      "desc": "Lines 2794-3138. Markers: data(20), setuint16(16).",
+      "startLine": 2794,
+      "endLine": 3138,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-13.js",
+      "title": "index-inline-1 13 — data",
+      "desc": "Lines 3139-3408. Markers: data(15), progress(11).",
+      "startLine": 3139,
+      "endLine": 3408,
+      "sourceFile": "readable/index-inline-1.pretty.js"
+    },
+    {
+      "file": "index-inline-1-wrapper-tail.js",
+      "skipped": true,
+      "title": "index-inline-1 — IIFE wrapper tail (not a statement, not sliced)",
+      "desc": "Lines 3409-3409. The closing `})();` line of the IIFE — not a statement of its body; indexed only, never sliced.",
+      "startLine": 3409,
+      "endLine": 3409,
+      "sourceFile": "readable/index-inline-1.pretty.js",
+      "firstLine": "})();",
+      "lastLine": "})();"
+    }
+  ],
+  "notRendered": [
+    {
+      "capture": "seedworld/og.jpg",
+      "kind": "image",
+      "bytes": 59982,
+      "sha256": "297c7fcdf2b64b33aacb58228e672929e3e941440b3cf44d36dd97841738094e",
+      "rendered": false,
+      "reason": "image payload referenced by the entry document (og:image social-preview JPEG) but never fetched at runtime — recorded by hash + size, no render pass"
+    }
+  ]
+}
