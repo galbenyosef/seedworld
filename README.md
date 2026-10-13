@@ -10,8 +10,9 @@ Source: https://openbench.fun/seedworld/
 
 - **Single-document HTML5 game** — the entire game ships in one 96,705-byte
   `index.html`: zero external scripts of its own, zero build output, zero
-  modules. (The only external `<link>` is the Google Fonts stylesheet — a CDN
-  dependency that stays CDN, PLAN §1 socker precedent.)
+  modules. (Its only external resource references are Google Fonts —
+  preconnects + stylesheet — a CDN dependency that stays CDN, PLAN §1 socker
+  precedent.)
 - **Raw WebGL 1, hand-written** — no engine, no framework, no three.js: the
   renderer draws one full-screen triangle whose fragment shader raymarches the
   planet, and the GLSL sources (VS/COMMON/VIEW_FS/BAKE_FS) live inline as
