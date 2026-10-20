@@ -120,6 +120,7 @@ npx serve .
 
 ```
 node tools/verify.mjs     # re-hash the capture against the manifest
+node tools/check-exports.mjs   # the derived layer still exports every public name
 ```
 
 ## Updating from upstream
