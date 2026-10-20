@@ -57,6 +57,59 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const proj = path.resolve(here, "..");
+// ── --check: the reproducibility gate ───────────────────────────────────
+// `node tools/derive.mjs --check` re-derives the derived layers IN MEMORY
+// and compares them against the committed ones. It writes NOTHING: every
+// derived file is compared against the committed file, and every difference
+// (a file that would change, a file that would be created, a file whose
+// committed copy would be superseded into legacy/, an orphan left in
+// readable/ or src/) is reported and makes the tool exit non-zero. A plain
+// run re-cuts exactly as before.
+const CHECK = process.argv.includes("--check");
+let checkProblems = 0;
+// The re-derivation, in memory: resolved path -> the content this run
+// produced. The self-check below reads it back instead of the committed
+// file, so a stale committed layer is never mistaken for the fresh one.
+const derivedText = new Map();
+// Files already counted as a problem (one problem per affected file).
+const counted = new Set();
+const keyOf = (abs) => path.resolve(abs);
+const relOf = (abs) => path.relative(proj, abs).split(path.sep).join("/");
+// Report a difference: one message and one problem per affected file, so a
+// file that would both change and be superseded is reported once.
+const noteProblem = (key, message) => {
+  if (counted.has(key)) return;
+  counted.add(key);
+  checkProblems++;
+  console.error(message);
+};
+
+// Write one derived file. Under --check the content is only COMPARED with
+// the committed file and a difference is reported; nothing is written.
+function writeDerived(abs, text, encoding) {
+  const key = keyOf(abs);
+  derivedText.set(key, text);
+  if (!CHECK) {
+    fs.mkdirSync(path.dirname(abs), { recursive: true });
+    fs.writeFileSync(abs, text, encoding);
+    return text;
+  }
+  const rel = relOf(abs);
+  if (!fs.existsSync(abs)) {
+    noteProblem(key, `derive --check: would create ${rel}`);
+  } else if (fs.readFileSync(abs, "utf8") !== text) {
+    noteProblem(key, `derive --check: would change ${rel}`);
+  }
+  return text;
+}
+
+// Read a derived file back: the fresh derivation when there is one, the
+// committed file otherwise.
+function readDerived(abs) {
+  const key = keyOf(abs);
+  if (derivedText.has(key)) return derivedText.get(key);
+  return fs.readFileSync(abs, "utf8");
+}
 const PINNED = "3.9.6";
 const MIN_WINDOW = 250;
 const MAX_WINDOW = 350;
@@ -65,7 +118,7 @@ const ROOT = "seedworld/"; // capture root (the served site root, a sub-path dep
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 const readLines = (abs) => {
-  const t = fs.readFileSync(abs, "utf8");
+  const t = readDerived(abs);
   const l = t.split("\n");
   if (l.length && l[l.length - 1] === "") l.pop();
   return l;
@@ -243,8 +296,10 @@ async function main() {
 
   const readableDir = path.join(proj, "readable");
   const srcDir = path.join(proj, "src");
-  fs.mkdirSync(readableDir, { recursive: true });
-  fs.mkdirSync(srcDir, { recursive: true });
+  if (!CHECK) {
+    fs.mkdirSync(readableDir, { recursive: true });
+    fs.mkdirSync(srcDir, { recursive: true });
+  }
   const written = { readable: new Set(), src: new Set() };
 
   const sources = [];
@@ -298,7 +353,7 @@ async function main() {
       const pretty = await formatOnce(prettier, b.text, parser);
       if (pretty === b.text)
         throw new Error(`readable/${prettyFile} would be byte-identical to its capture source`);
-      fs.writeFileSync(path.join(readableDir, prettyFile), pretty);
+      writeDerived(path.join(readableDir, prettyFile), pretty);
       written.readable.add(prettyFile);
       const prettyBuf = Buffer.from(pretty, "utf8");
       const lines = linesOf(pretty);
@@ -494,7 +549,7 @@ async function main() {
             bodyText;
           const chk = parses(sliceText);
           if (!chk.ok) throw new Error(`generated src/${file} does not parse standalone: ${chk.why}`);
-          fs.writeFileSync(path.join(srcDir, file), sliceText);
+          writeDerived(path.join(srcDir, file), sliceText);
           written.src.add(file);
           sections.push({
             file,
@@ -581,7 +636,7 @@ async function main() {
   // ── 3) readable/index-inline-map.json (inline twins, byte ranges) ───────
   const inlineMapPath = path.join(readableDir, "index-inline-map.json");
   if (inlineMapBlocks.length) {
-    fs.writeFileSync(
+    writeDerived(
       inlineMapPath,
       JSON.stringify(
         {
@@ -597,8 +652,15 @@ async function main() {
     );
     console.log(`derive: readable/index-inline-map.json (${inlineMapBlocks.length} inline block(s))`);
   } else if (fs.existsSync(inlineMapPath)) {
-    fs.rmSync(inlineMapPath);
-    console.log("derive: removed stale readable/index-inline-map.json (capture has no inline blocks)");
+    if (CHECK) {
+      noteProblem(
+        keyOf(inlineMapPath),
+        "derive --check: orphan derived file readable/index-inline-map.json",
+      );
+    } else {
+      fs.rmSync(inlineMapPath);
+      console.log("derive: removed stale readable/index-inline-map.json (capture has no inline blocks)");
+    }
   }
 
   // ── 4) prune orphan derived files (capture untouched) ──────────────────
@@ -607,11 +669,18 @@ async function main() {
     [readableDir, written.readable, /\.(pretty\.js|pretty\.css)$/],
     [srcDir, written.src, /\.js$/],
   ]) {
-    for (const f of fs.readdirSync(dir)) {
+    for (const f of fs.existsSync(dir) ? fs.readdirSync(dir) : []) {
       if (exts.test(f) && !keep.has(f)) {
-        fs.rmSync(path.join(dir, f));
-        pruned++;
-        console.log(`derive: pruned orphan derived file ${path.join(path.basename(dir), f)}`);
+        if (CHECK) {
+          noteProblem(
+            keyOf(path.join(dir, f)),
+            `derive --check: orphan derived file ${path.join(path.basename(dir), f)}`,
+          );
+        } else {
+          fs.rmSync(path.join(dir, f));
+          pruned++;
+          console.log(`derive: pruned orphan derived file ${path.join(path.basename(dir), f)}`);
+        }
       }
     }
   }
@@ -695,7 +764,7 @@ async function main() {
     sections,
     notRendered,
   };
-  fs.writeFileSync(path.join(proj, "split-spec.json"), JSON.stringify(spec, null, 2) + "\n");
+  writeDerived(path.join(proj, "split-spec.json"), JSON.stringify(spec, null, 2) + "\n");
 
   // ── 6) self-check (tools/audit.js is the authoritative gate) ───────────
   let bad = 0;
@@ -728,7 +797,7 @@ async function main() {
     if (s.wholeFile || s.skipped) continue;
     ranged++;
     const abs = path.join(srcDir, s.file);
-    const text = fs.readFileSync(abs, "utf8");
+    const text = readDerived(abs);
     const nl2 = text.indexOf("\n", text.indexOf("\n") + 1);
     const body = text.slice(nl2 + 1);
     const expected = readLines(path.join(proj, s.sourceFile)).slice(s.startLine - 1, s.endLine).join("\n") + "\n";
@@ -744,7 +813,7 @@ async function main() {
   let prettyParsed = 0;
   for (const s of sources) {
     if (!s.sourceFile?.endsWith(".pretty.js")) continue;
-    if (!parses(fs.readFileSync(path.join(proj, s.sourceFile), "utf8")).ok) {
+    if (!parses(readDerived(path.join(proj, s.sourceFile))).ok) {
       console.error(`PARSE FAIL ${s.sourceFile}`);
       bad++;
     } else prettyParsed++;
@@ -756,6 +825,17 @@ async function main() {
       `${prettyParsed} pretty js parse clean, ${notRendered.length} notRendered, ${pruned} orphan(s) pruned — ` +
       `self-check ${bad ? bad + " FAILURE(S)" : "clean"}`,
   );
+  if (CHECK) {
+    if (checkProblems || bad) {
+      console.error(
+        `derive --check: ${checkProblems} difference(s) between the committed derived layers and a fresh re-derivation` +
+          (bad ? ` (self-check: ${bad} failure(s))` : ""),
+      );
+      process.exit(1);
+    }
+    console.log("derive --check: the committed derived layers match a fresh re-derivation exactly (nothing written)");
+    process.exit(0);
+  }
   if (bad) process.exit(1);
 }
 
