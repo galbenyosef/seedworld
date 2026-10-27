@@ -134,10 +134,16 @@ const tagOf = (capRel) => {
 
 // ── pinned prettier (module API, exactly 3.9.6) ─────────────────────────
 async function loadPrettier() {
+  // The pinned renderer is VENDORED in this mirror (tools/vendor/prettier) —
+  // it is never resolved from a sibling mirror's tree: that directory is
+  // gitignored and uncommitted, so it exists only on whichever machine
+  // happened to install it, and a clean checkout then broke the derive with a
+  // module-not-found that read like a broken tool rather than a missing
+  // dependency. See tools/vendor/prettier/VENDOR-README.md.
   const candidates = [
     process.env.PRETTIER_MJS,
+    path.join(proj, "tools", "vendor", "prettier", "index.mjs"),
     path.join(proj, "node_modules", "prettier", "index.mjs"),
-    "D:/repos/mirrors/metropolygonia/node_modules/prettier/index.mjs",
   ].filter(Boolean);
   for (const c of candidates) {
     if (!fs.existsSync(c)) continue;
@@ -150,7 +156,14 @@ async function loadPrettier() {
       /* try next */
     }
   }
-  throw new Error(`pinned prettier ${PINNED} not found (set PRETTIER_MJS to its index.mjs)`);
+  throw new Error(
+    `pinned prettier ${PINNED} not found.\n` +
+      `  tried:\n` +
+      candidates.map((c) => `    ${c}`).join("\n") +
+      `\n  fix: restore the vendored copy (git checkout -- tools/vendor/prettier) ` +
+      `or install it (npm install --no-save prettier@${PINNED}), ` +
+      `or point PRETTIER_MJS at its index.mjs`,
+  );
 }
 
 // single pass + idempotency proof: prettier output must be a fixed point of

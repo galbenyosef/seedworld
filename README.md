@@ -88,6 +88,10 @@ Genuine 404s (probed 2026-10-13, documented gaps): `seedworld/favicon.ico`,
 - `tools/update.mjs` — read-only drift probe against the live origin
 - `tools/verify.mjs` — re-hash the capture against the manifest
 - `tools/audit.js` — integrity gate for the derived layers (`AUDIT PASS`)
+- `tools/vendor/prettier/` — the pinned prettier 3.9.6 renderer, vendored into
+  this mirror (module API, all 13 language plugins; provenance and integrity
+  hash in `VENDOR-README.md`) so `derive`/`audit` resolve it from this tree and
+  never from a sibling mirror's gitignored `node_modules/`
 - `docs/cover.png` — cover (gameplay: a ringed exotic world grown in the
   mirror, mid-tune), `docs/boot-2026-10-13.png` — boot evidence,
   `docs/network-log-2026-10-13.jsonl` — the raw browser network log (the
@@ -119,9 +123,18 @@ npx serve .
 ## Verify
 
 ```
-node tools/verify.mjs     # re-hash the capture against the manifest
-node tools/check-exports.mjs   # the derived layer still exports every public name
+node tools/verify.mjs          # re-hash the capture against the manifest
+node tools/derive.mjs --check  # committed derived layers match a fresh re-derivation (writes nothing)
+node tools/audit.js            # derived-layer integrity gate (AUDIT PASS)
+node tools/check-exports.mjs   # public-export-name gate
 ```
+
+The public-export-name gate reports `0 export table(s) checked` here, and that
+is the honest count rather than a blind spot: the whole game is one inline
+`<script>` wrapped in a single top-level IIFE, so the script declares **no
+`export` statements at all** — there is no public export surface to compare.
+The gate still runs, reports no name lost, and would go red if an export table
+ever appeared unaccounted for.
 
 ## Updating from upstream
 
@@ -141,7 +154,8 @@ untouched — `node tools/verify.mjs` re-hashes both files):
 
 - `readable/` — pinned prettier 3.9.6 (module API, default options, single
   pass verified idempotent — never the CLI, it respects `.gitignore` and can
-  silently echo its input) rendered the entry's **inline `<script>`** to
+  silently echo its input), vendored in this mirror at `tools/vendor/prettier`
+  and resolved from there, rendered the entry's **inline `<script>`** to
   `readable/index-inline-1.pretty.js` (3,409 lines) and its **inline
   `<style>`** to `readable/index-inline-1.pretty.css` (793 lines); both
   pretties are provably not a byte copy of their capture source and re-render
@@ -179,8 +193,10 @@ untouched — `node tools/verify.mjs` re-hashes both files):
   captured HTML (script/link refs, `fetch(`/`new URL`/`import(`, path
   literals) confirms it: the only URL literals in the game code are the OG
   meta, the Google Fonts link and the two platform endpoints.
-- Gates: `node tools/verify.mjs` → `2 files checked, 0 problems`;
-  `node tools/update.mjs` → `up to date: 2 captured files identical upstream`;
+- Derivation-day gates (2026-10-13): `node tools/verify.mjs` → `2 files
+  checked, 0 problems`; `node tools/update.mjs` → `up to date: 2 captured
+  files identical upstream` (at capture time; the probe is read-only and a
+  later upstream change is drift, never a rewrite of the snapshot);
   `node tools/audit.js` → `AUDIT PASS` (13/13 round-trips, 2/2 pretties
   re-render byte-exact, 2 inline blocks with byte-range twins, 4/4 skipped
   wrapper/guard sections re-verified, capture manifest free of derived
@@ -189,6 +205,13 @@ untouched — `node tools/verify.mjs` re-hashes both files):
   verified in-browser (New world → new seed; Solar system → 6 planets; Textures
   → 6 maps baked live), listener killed, port closed (netstat). Rebuild with
   `node tools/derive.mjs`.
+- Re-check (2026-10-27): `node tools/verify.mjs` → `2 files checked, 0
+  problems`; `node tools/derive.mjs --check` → `the committed derived layers
+  match a fresh re-derivation exactly (nothing written)`; `node tools/audit.js`
+  → `AUDIT PASS`; `node tools/check-exports.mjs` → `0 export table(s) checked`,
+  `no public export name lost`; `node tools/update.mjs` → `DRIFT: 1 changed,
+  0 live-missing (of 2 captured)` — `seedworld/index.html` has changed upstream
+  since capture; the snapshot is left untouched (a mirror is point-in-time).
 
 ## Mirror conventions
 

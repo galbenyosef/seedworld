@@ -30,9 +30,11 @@
 //      missing reversals; wholeFile/skipped names are not on disk.
 //   7. Every readable pretty is referenced by the spec, its capture source exists, is
 //      recorded in .upstream/manifest.json, and is NOT byte-identical to the pretty
-//      (prettier did run). When the pinned prettier 3.9.6 is importable, each pretty is
-//      re-rendered from its recorded inline byte range under the recorded options and
-//      byte-compared (best-effort: missing prettier is a note, a mismatch is a problem).
+//      (prettier did run). Each pretty is re-rendered from its recorded inline byte range
+//      under the recorded options and byte-compared with the pinned prettier 3.9.6 that
+//      is VENDORED at tools/vendor/prettier (committed, so it is present on a clean
+//      checkout); a missing renderer is a problem, not a note — otherwise the re-render
+//      check would silently skip and the audit would still say PASS.
 //   8. The hard rule — src/ import resolution: relative specifiers (static from-imports,
 //      side-effect imports, re-exports, dynamic import() incl. non-interpolated template
 //      literals) resolve to files the CAPTURE carries. Seedworld's game script has no
@@ -567,11 +569,16 @@ if (manifest) {
   }
 }
 
-// ── best-effort: re-render every pretty with the pinned prettier 3.9.6 ─
+// ── re-render every pretty with the pinned prettier 3.9.6 ────────────────
+// The pinned renderer is VENDORED in this mirror (tools/vendor/prettier) —
+// never resolved from a sibling mirror's tree: that directory is gitignored
+// and uncommitted, so a clean checkout would have silently SKIPPED the
+// re-render check below and the audit would still have said PASS.
+// See tools/vendor/prettier/VENDOR-README.md.
 const prettierCandidates = [
   process.env.PRETTIER_MJS,
+  path.join(proj, "tools", "vendor", "prettier", "index.mjs"),
   path.join(proj, "node_modules", "prettier", "index.mjs"),
-  "D:/repos/mirrors/metropolygonia/node_modules/prettier/index.mjs",
 ].filter(Boolean);
 function loadPinnedPrettier() {
   for (const c of prettierCandidates) {
@@ -588,8 +595,14 @@ function loadPinnedPrettier() {
 }
 
 (async () => {
-  let renderNote = `prettier ${PINNED} not importable — renderOptions recorded, re-render check skipped`;
   const prettierPath = loadPinnedPrettier();
+  if (!prettierPath)
+    problem(
+      `pinned prettier ${PINNED} not found — the re-render check could not run (looked in: ` +
+        prettierCandidates.map((c) => `"${c}"`).join(", ") +
+        `). Restore it with: git checkout -- tools/vendor/prettier`,
+    );
+  let renderNote = `prettier ${PINNED} not importable — re-render check SKIPPED`;
   if (prettierPath) {
     const prettier = (await import(pathToFileURL(prettierPath).href)).default;
     let renderOK = 0;
