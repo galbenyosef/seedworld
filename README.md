@@ -136,6 +136,22 @@ is the honest count rather than a blind spot: the whole game is one inline
 The gate still runs, reports no name lost, and would go red if an export table
 ever appeared unaccounted for.
 
+## Boot test (2026-10-27)
+
+- Entry: `http://127.0.0.1:4940/seedworld/` served by `tools/serve.mjs` with the
+  network blocked (`MAP * 127.0.0.1`).
+- Outcome: **rendered** — the page booted straight into a live world ("Ashrae",
+  a frozen planet) with the full control panel, seed field, ocean/cloud/day/tilt
+  readouts and a shaded WebGL planet on the starfield.
+- Evidence: body 785 chars; canvas 1262×568 (plus 1 hidden background canvas and
+  7 offscreen bake canvases); 0 console errors; 2 failed same-origin requests,
+  1 blocked cross-origin; screenshot `docs/boot-2026-10-27.png`.
+- Gaps seen: `/api/hit` (platform visit-counter POST) 404 and `/favicon.ico` 404
+  — both same-origin and documented; the game does not depend on either.
+- This confirms the self-contained claim above: nothing same-origin was needed
+  to boot and render beyond the entry document. No "playable build absent"
+  claim existed to test.
+
 ## Updating from upstream
 
 ```
