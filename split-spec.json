@@ -10,7 +10,7 @@
     "css": "parser css, no plugins (inline <style> blocks)",
     "json": "parser json, no plugins (inline importmap blocks, if any)"
   },
-  "source": "readable/: 1 JS pretty (the inline game script, 13 statement-aligned slices) + 1 CSS pretty (inline stylesheet, wholeFile) + readable/index-inline-map.json; src/: 13 slices; 4 skipped section(s); 1 wholeFile section(s); 1 notRendered payload(s); capture: 2 file(s) under .upstream/manifest.json; inline scan: seedworld/index.html.",
+  "source": "readable/: 1 JS pretty (the inline game script, 13 statement-aligned slices) + 1 CSS pretty (inline stylesheet, wholeFile) + readable/index-inline-map.json; src/: 13 slices; 4 skipped section(s); 1 wholeFile section(s); 2 notRendered payload(s); capture: 3 file(s) under .upstream/manifest.json; inline scan: seedworld/index.html.",
   "inline": {
     "scanned": [
       "seedworld/index.html"
@@ -45,8 +45,8 @@
       "sourceFile": "readable/index-inline-1.pretty.css",
       "capture": "seedworld/index.html",
       "captureKind": "inline-style",
-      "captureByteStart": 1127,
-      "captureByteEnd": 12359,
+      "captureByteStart": 1926,
+      "captureByteEnd": 13158,
       "captureSha256": "3615c6e70c4c2da72e4cea6098434b52221afea058fdf8351b5f9f94ab61084a",
       "captureBytes": 11232,
       "prettyLines": 793,
@@ -61,8 +61,8 @@
       "sourceFile": "readable/index-inline-1.pretty.js",
       "capture": "seedworld/index.html",
       "captureKind": "inline-script",
-      "captureByteStart": 21971,
-      "captureByteEnd": 96679,
+      "captureByteStart": 22770,
+      "captureByteEnd": 97478,
       "captureSha256": "1c7ace5837cb6c8b934c068277aa537bc14f779ce8bf03b960819ea23d1cedb7",
       "captureBytes": 74708,
       "prettyLines": 3409,
@@ -84,6 +84,16 @@
       "tag": "og.jpg",
       "slices": 0,
       "derived": "notRendered (hashed payload)"
+    },
+    {
+      "sourceFile": null,
+      "capture": "seedworld/share-v2.jpg",
+      "captureKind": "payload",
+      "captureSha256": "26d3bc1fe35cffa87b5cf7ffcf53eafc577962152f774be2c4959800efc14c30",
+      "captureBytes": 116734,
+      "tag": "share-v2.jpg",
+      "slices": 0,
+      "derived": "notRendered (hashed payload)"
     }
   ],
   "sections": [
@@ -91,7 +101,7 @@
       "file": "index-inline-1.css",
       "wholeFile": true,
       "title": "index-inline-1 — inline style block (whole-file, never sliced)",
-      "desc": "Lines 1-793 of readable/index-inline-1.pretty.css. Whole-file: the entry document's inline style block (11232 B at bytes 1127-12359 of seedworld/index.html) is indexed whole and never sliced.",
+      "desc": "Lines 1-793 of readable/index-inline-1.pretty.css. Whole-file: the entry document's inline style block (11232 B at bytes 1926-13158 of seedworld/index.html) is indexed whole and never sliced.",
       "note": "whole-file (entry inline style block, not sliced)",
       "startLine": 1,
       "endLine": 793,
@@ -252,6 +262,14 @@
       "kind": "image",
       "bytes": 59982,
       "sha256": "297c7fcdf2b64b33aacb58228e672929e3e941440b3cf44d36dd97841738094e",
+      "rendered": false,
+      "reason": "image payload referenced by the entry document (og:image social-preview JPEG) but never fetched at runtime — recorded by hash + size, no render pass"
+    },
+    {
+      "capture": "seedworld/share-v2.jpg",
+      "kind": "image",
+      "bytes": 116734,
+      "sha256": "26d3bc1fe35cffa87b5cf7ffcf53eafc577962152f774be2c4959800efc14c30",
       "rendered": false,
       "reason": "image payload referenced by the entry document (og:image social-preview JPEG) but never fetched at runtime — recorded by hash + size, no render pass"
     }

@@ -1,14 +1,18 @@
 {
-  "generated": "2026-10-13",
-  "origin": "https://openbench.fun/seedworld/",
+  "generated": "2026-10-31",
+  "origin": "https://openbench.fun",
   "files": {
     "seedworld/index.html": {
-      "bytes": 96705,
-      "sha256": "ccf347cd8ba419c54bafafda98732f41ccb5a8e5337e37fe480143bef8c18306"
+      "bytes": 97504,
+      "sha256": "972ebe3556b211f8f1f4c5e373db8d76dbc0a24f73b9ea9399cc17d1f51164eb"
     },
     "seedworld/og.jpg": {
       "bytes": 59982,
       "sha256": "297c7fcdf2b64b33aacb58228e672929e3e941440b3cf44d36dd97841738094e"
+    },
+    "seedworld/share-v2.jpg": {
+      "bytes": 116734,
+      "sha256": "26d3bc1fe35cffa87b5cf7ffcf53eafc577962152f774be2c4959800efc14c30"
     }
   }
 }
